@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stark Productivity Suite — v15.00.06</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue:        #3b82f6;
+            --blue-bright: #60a5fa;
+            --blue-dim:    rgba(59,130,246,0.15);
+            --blue-glow:   rgba(59,130,246,0.25);
+            --bg:          #080d14;
+            --bg2:         #0c1220;
+            --bg3:         #101828;
+            --border:      rgba(59,130,246,0.14);
+            --border-soft: rgba(255,255,255,0.06);
+            --text:        #f0f4ff;
+            --text-2:      #94a3b8;
+            --text-3:      #4a5568;
+            --white:       #ffffff;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── SUBTLE RADIAL GLOW BEHIND HERO ── */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -200px; left: 50%;
+            transform: translateX(-50%);
+            width: 900px; height: 600px;
+            background: radial-gradient(ellipse, rgba(59,130,246,0.07) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* ── SCROLL PROGRESS ── */
+        #prog {
+            position: fixed; top: 0; left: 0;
+            height: 2px; width: 0%;
+            background: linear-gradient(90deg, var(--blue), var(--blue-bright));
+            box-shadow: 0 0 10px var(--blue-glow);
+            z-index: 9999; transition: width 0.1s linear;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            height: 60px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 48px;
+            background: rgba(8,13,20,0.88);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .nav-logo {
+            font-size: 0.95rem; font-weight: 700;
+            color: var(--text); letter-spacing: -0.01em;
+        }
+
+        .nav-logo span {
+            color: var(--blue-bright);
+        }
+
+        .nav-links {
+            display: flex; gap: 28px; list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.82rem; font-weight: 500;
+            color: var(--text-2); text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text); }
+
+        .nav-install {
+            background: var(--blue) !important;
+            color: var(--white) !important;
+            padding: 7px 18px !important;
+            border-radius: 6px !important;
+            font-weight: 600 !important;
+            font-size: 0.82rem !important;
+            transition: background 0.2s, box-shadow 0.2s !important;
+        }
+
+        .nav-install:hover {
+            background: var(--blue-bright) !important;
+            box-shadow: 0 0 20px var(--blue-glow) !important;
+            color: var(--bg) !important;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center;
+            padding: 100px 24px 80px;
+            position: relative; z-index: 1;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.72rem; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--blue-bright);
+            background: var(--blue-dim);
+            border: 1px solid var(--border);
+            padding: 6px 16px; border-radius: 6px;
+            margin-bottom: 32px;
+            animation: fadeUp 0.6s ease 0.1s both;
+        }
+
+        .hero-eyebrow .dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--blue-bright);
+            animation: pulse 1.6s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 6.5vw, 5.2rem);
+            font-weight: 800; letter-spacing: -0.04em; line-height: 1.0;
+            margin-bottom: 24px;
+            animation: fadeUp 0.6s ease 0.2s both;
+        }
+
+        .hero h1 .accent {
+            color: var(--blue-bright);
+        }
+
+        .hero-sub {
+            font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+            color: var(--text-2); max-width: 560px;
+            margin: 0 auto 40px; line-height: 1.8;
+            animation: fadeUp 0.6s ease 0.3s both;
+        }
+
+        .hero-stats {
+            display: flex; gap: 40px; justify-content: center;
+            flex-wrap: wrap; margin-bottom: 48px;
+            animation: fadeUp 0.6s ease 0.4s both;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat .num {
+            font-size: 1.8rem; font-weight: 800;
+            color: var(--blue-bright); line-height: 1;
+            margin-bottom: 4px;
+            text-shadow: 0 0 20px rgba(96,165,250,0.4);
+        }
+
+        .hero-stat .lbl {
+            font-size: 0.72rem; font-weight: 500;
+            color: var(--text-3); letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .hero-divider {
+            width: 1px; height: 40px;
+            background: var(--border-soft);
+            align-self: center;
+        }
+
+        .hero-actions {
+            display: flex; gap: 12px; flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeUp 0.6s ease 0.5s both;
+        }
+
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--blue);
+            color: var(--white); font-size: 0.92rem; font-weight: 600;
+            padding: 13px 30px; border-radius: 8px; text-decoration: none;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary:hover {
+            background: var(--blue-bright);
+            color: var(--bg);
+            box-shadow: 0 0 30px var(--blue-glow);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: transparent;
+            color: var(--text-2); font-size: 0.92rem; font-weight: 500;
+            padding: 12px 28px; border-radius: 8px; text-decoration: none;
+            border: 1px solid var(--border-soft);
+            transition: border-color 0.2s, color 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--border);
+            color: var(--text);
+        }
+
+        .hero-note {
+            margin-top: 18px;
+            font-size: 0.75rem; color: var(--text-3);
+            animation: fadeUp 0.6s ease 0.6s both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── DIVIDER ── */
+        .divider {
+            width: 100%; height: 1px;
+            background: var(--border-soft);
+            position: relative; z-index: 1;
+        }
+
+        /* ── SECTION WRAPPER ── */
+        .wrap {
+            max-width: 1100px; margin: 0 auto;
+            padding: 96px 48px;
+            position: relative; z-index: 1;
+        }
+
+        .wrap.narrow { max-width: 780px; }
+
+        .sec-header { margin-bottom: 52px; }
+
+        .sec-eyebrow {
+            font-size: 0.68rem; font-weight: 600;
+            letter-spacing: 0.14em; text-transform: uppercase;
+            color: var(--blue-bright);
+            margin-bottom: 12px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .sec-eyebrow::before {
+            content: '';
+            width: 20px; height: 1px;
+            background: var(--blue-bright);
+            display: inline-block;
+        }
+
+        .sec-title {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
+            color: var(--text); margin-bottom: 12px;
+        }
+
+        .sec-sub {
+            font-size: 0.95rem; color: var(--text-2);
+            max-width: 480px; line-height: 1.8;
+        }
+
+        /* ── FEATURES GRID ── */
+        .feat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border-soft);
+            border: 1px solid var(--border-soft);
+            border-radius: 12px; overflow: hidden;
+        }
+
+        .feat-card {
+            background: var(--bg2);
+            padding: 32px 28px;
+            position: relative; overflow: hidden;
+            transition: background 0.25s;
+        }
+
+        .feat-card:hover { background: var(--bg3); }
+
+        .feat-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, var(--blue), transparent);
+            opacity: 0; transition: opacity 0.3s;
+        }
+
+        .feat-card:hover::before { opacity: 1; }
+
+        .feat-icon { font-size: 1.6rem; margin-bottom: 16px; display: block; }
+
+        .feat-card h3 {
+            font-size: 0.92rem; font-weight: 700;
+            color: var(--text); margin-bottom: 14px;
+        }
+
+        .feat-card ul { list-style: none; padding: 0; }
+
+        .feat-card li {
+            font-size: 0.82rem; color: var(--text-2);
+            padding: 3px 0 3px 16px; position: relative;
+            transition: color 0.2s;
+        }
+
+        .feat-card li:hover { color: var(--blue-bright); }
+
+        .feat-card li::before {
+            content: '›';
+            position: absolute; left: 0;
+            color: var(--blue); font-weight: 700;
+        }
+
+        /* ── INSTALL STEPS ── */
+        .steps-list {
+            display: flex; flex-direction: column; gap: 0;
+            border: 1px solid var(--border-soft);
+            border-radius: 12px; overflow: hidden;
+        }
+
+        .step-row {
+            display: flex; align-items: stretch;
+            border-bottom: 1px solid var(--border-soft);
+            background: var(--bg2);
+            transition: background 0.2s;
+        }
+
+        .step-row:last-child { border-bottom: none; }
+        .step-row:hover { background: var(--bg3); }
+
+        .step-num-col {
+            min-width: 72px;
+            display: flex; align-items: center; justify-content: center;
+            border-right: 1px solid var(--border-soft);
+            padding: 24px 16px;
+        }
+
+        .step-num-val {
+            font-size: 1.4rem; font-weight: 800;
+            color: var(--blue); line-height: 1;
+            text-shadow: 0 0 16px rgba(59,130,246,0.4);
+        }
+
+        .step-body {
+            padding: 24px 28px; flex: 1;
+        }
+
+        .step-body h4 {
+            font-size: 0.9rem; font-weight: 700;
+            color: var(--text); margin-bottom: 6px;
+        }
+
+        .step-body p {
+            font-size: 0.83rem; color: var(--text-2); line-height: 1.7;
+        }
+
+        .step-body a {
+            color: var(--blue-bright); text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .step-body a:hover { color: var(--text); }
+
+        /* ── CHANGELOG ── */
+        .cl-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border: 1px solid var(--border-soft);
+            border-radius: 12px; overflow: hidden;
+            background: var(--border-soft);
+        }
+
+        .cl-cell {
+            display: flex; gap: 14px; align-items: flex-start;
+            padding: 20px 24px;
+            background: var(--bg2);
+            border-right: 1px solid var(--border-soft);
+            border-bottom: 1px solid var(--border-soft);
+            transition: background 0.2s, border-left 0.2s;
+            border-left: 2px solid transparent;
+        }
+
+        .cl-cell:hover {
+            background: var(--bg3);
+            border-left-color: var(--blue);
+        }
+
+        .cl-cell:nth-child(2n) { border-right: none; }
+        .cl-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+        .cl-icon { font-size: 0.95rem; flex-shrink: 0; margin-top: 2px; }
+
+        .cl-text {
+            font-size: 0.83rem; color: var(--text-2); line-height: 1.6;
+        }
+
+        .cl-text strong { color: var(--text); font-weight: 600; }
+
+        /* ── SPECS ── */
+        .specs-strip {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            border: 1px solid var(--border-soft);
+            border-radius: 12px; overflow: hidden;
+            background: var(--border-soft);
+        }
+
+        .spec-cell {
+            background: var(--bg2);
+            padding: 28px 16px; text-align: center;
+            border-right: 1px solid var(--border-soft);
+            transition: background 0.2s;
+        }
+
+        .spec-cell:last-child { border-right: none; }
+        .spec-cell:hover { background: var(--bg3); }
+
+        .spec-lbl {
+            font-size: 0.62rem; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--blue-bright); margin-bottom: 8px; opacity: 0.8;
+        }
+
+        .spec-val {
+            font-size: 0.85rem; font-weight: 700; color: var(--text);
+        }
+
+        /* ── PEOPLE ── */
+        .people-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+            gap: 12px;
+        }
+
+        .person-card {
+            background: var(--bg2);
+            border: 1px solid var(--border-soft);
+            border-radius: 12px; padding: 28px 18px;
+            text-align: center; text-decoration: none;
+            display: block;
+            position: relative; overflow: hidden;
+            transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+        }
+
+        .person-card::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--blue), var(--blue-bright));
+            transform: scaleX(0); transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .person-card:hover {
+            border-color: var(--border);
+            box-shadow: 0 8px 32px rgba(59,130,246,0.1);
+            transform: translateY(-4px);
+        }
+
+        .person-card:hover::after { transform: scaleX(1); }
+
+        .person-card.lead {
+            border-color: rgba(99,102,241,0.2);
+        }
+
+        .person-card.lead::after {
+            background: linear-gradient(90deg, #6366f1, #a78bfa);
+        }
+
+        .person-card.lead:hover {
+            border-color: rgba(99,102,241,0.4);
+            box-shadow: 0 8px 32px rgba(99,102,241,0.12);
+        }
+
+        .person-avatar {
+            width: 72px; height: 72px; border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(59,130,246,0.25);
+            margin: 0 auto 14px; display: block;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .person-card:hover .person-avatar {
+            border-color: rgba(59,130,246,0.5);
+            box-shadow: 0 0 16px rgba(59,130,246,0.2);
+        }
+
+        .person-card.lead .person-avatar {
+            border-color: rgba(99,102,241,0.3);
+        }
+
+        .person-card.lead:hover .person-avatar {
+            border-color: rgba(99,102,241,0.55);
+            box-shadow: 0 0 16px rgba(99,102,241,0.2);
+        }
+
+        .person-fallback {
+            display: none;
+            width: 72px; height: 72px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), #6366f1);
+            align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 800; color: var(--white);
+            margin: 0 auto 14px;
+            border: 2px solid rgba(59,130,246,0.3);
+        }
+
+        .person-card.lead .person-fallback {
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            border-color: rgba(99,102,241,0.35);
+        }
+
+        .person-name {
+            font-size: 0.85rem; font-weight: 700;
+            color: var(--text); margin-bottom: 8px; line-height: 1.3;
+        }
+
+        .person-role {
+            font-size: 0.62rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--blue-bright);
+            padding: 4px 10px;
+            background: var(--blue-dim);
+            border: 1px solid var(--border);
+            border-radius: 4px; display: inline-block;
+        }
+
+        .person-card.lead .person-role {
+            color: #a78bfa;
+            background: rgba(99,102,241,0.1);
+            border-color: rgba(99,102,241,0.2);
+        }
+
+        /* ── FAQ ── */
+        .faq-list {
+            display: flex; flex-direction: column; gap: 0;
+            border: 1px solid var(--border-soft);
+            border-radius: 12px; overflow: hidden;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--border-soft);
+            background: var(--bg2);
+            transition: background 0.2s;
+        }
+
+        .faq-item:last-child { border-bottom: none; }
+        .faq-item:hover { background: var(--bg3); }
+
+        .faq-q {
+            width: 100%; background: none; border: none; cursor: pointer;
+            padding: 20px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+            color: var(--text); font-size: 0.9rem; font-weight: 500;
+            font-family: 'Inter', sans-serif; text-align: left;
+            transition: color 0.2s;
+        }
+
+        .faq-q:hover { color: var(--blue-bright); }
+
+        .faq-arrow {
+            font-size: 0.72rem; color: var(--blue);
+            transition: transform 0.3s; flex-shrink: 0; margin-left: 16px;
+        }
+
+        .faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+        .faq-a {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.35s ease, padding 0.35s ease;
+            font-size: 0.85rem; color: var(--text-2); line-height: 1.8;
+            padding: 0 24px;
+        }
+
+        .faq-item.open .faq-a { max-height: 200px; padding: 0 24px 20px; }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--bg2);
+            border-top: 1px solid var(--border-soft);
+            padding: 60px 48px 40px;
+            position: relative; z-index: 1;
+        }
+
+        .footer-inner {
+            max-width: 1100px; margin: 0 auto;
+            display: flex; justify-content: space-between;
+            align-items: flex-start; flex-wrap: wrap; gap: 40px;
+        }
+
+        .footer-brand .fb-logo {
+            font-size: 1rem; font-weight: 700;
+            color: var(--text); margin-bottom: 8px;
+        }
+
+        .footer-brand .fb-logo span { color: var(--blue-bright); }
+
+        .footer-brand .fb-sub {
+            font-size: 0.78rem; color: var(--text-3); line-height: 1.7;
+        }
+
+        .footer-col h5 {
+            font-size: 0.65rem; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--blue-bright); margin-bottom: 16px;
+        }
+
+        .footer-col ul { list-style: none; }
+
+        .footer-col li { margin-bottom: 10px; }
+
+        .footer-col a {
+            font-size: 0.82rem; color: var(--text-3);
+            text-decoration: none; transition: color 0.2s;
+        }
+
+        .footer-col a:hover { color: var(--text); }
+
+        .footer-bottom {
+            max-width: 1100px; margin: 40px auto 0;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-soft);
+            display: flex; justify-content: space-between;
+            align-items: center; flex-wrap: wrap; gap: 10px;
+        }
+
+        .footer-copy {
+            font-size: 0.72rem; color: var(--text-3);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            nav { padding: 0 20px; }
+            .nav-links { display: none; }
+            .wrap { padding: 72px 20px; }
+            .feat-grid { grid-template-columns: 1fr; }
+            .cl-grid { grid-template-columns: 1fr; }
+            .cl-cell { border-right: none; }
+            .cl-cell:nth-last-child(-n+2) { border-bottom: 1px solid var(--border-soft); }
+            .cl-cell:last-child { border-bottom: none; }
+            .specs-strip { grid-template-columns: repeat(3, 1fr); }
+            .spec-cell:nth-child(3n) { border-right: none; }
+            .spec-cell:nth-child(n+4) { border-top: 1px solid var(--border-soft); }
+            footer { padding: 60px 20px 40px; }
+            .footer-inner { flex-direction: column; }
+        }
+    </style>
+</head>
+
+
+<body>
+    <div id="prog"></div>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo">Stark <span>Suite</span></div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#install">Install</a></li>
+            <li><a href="#changelog">Changelog</a></li>
+            <li><a href="#team">Team</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="" class="nav-install">Install Script</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-eyebrow"><span class="dot"></span> Version 15.00.06 — Now Available</div>
+        <h1>Stark <span class="accent">Productivity</span><br>Suite + P360</h1>
+        <p class="hero-sub">The all-in-one productivity and time tracking solution for Amazon's Harmony Console — now with seamless P360 integration, real-time downtime sync, and configurable notifications.</p>
+
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="num">6+</div>
+                <div class="lbl">Integrated Tools</div>
+            </div>
+            <div class="hero-divider"></div>
+            <div class="hero-stat">
+                <div class="num">1s</div>
+                <div class="lbl">P360 Sync Interval</div>
+            </div>
+            <div class="hero-divider"></div>
+            <div class="hero-stat">
+                <div class="num">31</div>
+                <div class="lbl">IVE Guard Rows</div>
+            </div>
+            <div class="hero-divider"></div>
+            <div class="hero-stat">
+                <div class="num">5m</div>
+                <div class="lbl">Default Notification</div>
+            </div>
+        </div>
+
+        <div class="hero-actions">
+            <a href="https://gist.github.com/olivieraamelia74-arch/1460bcb327aa828f53af5dcd8d5a8991/raw/33b94dc6aa17e4db31cb37ddced95988461c1d8d/stark_productivity_suite_V15.00.05.user.js" class="btn-primary">⬇ Install Script</a>
+            <a href="#features" class="btn-secondary">Explore Features →</a>
+        </div>
+        <p class="hero-note">Requires Tampermonkey · Runs on console.harmony.a2z.com</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FEATURES -->
+    <section class="wrap" id="features">
+        <div class="sec-header">
+            <div class="sec-eyebrow">What's Inside</div>
+            <div class="sec-title">Six tools. One script.</div>
+            <p class="sec-sub">Everything you need to track, validate, and optimize your productivity on Harmony Console.</p>
+        </div>
+
+        <div class="feat-grid">
+            <div class="feat-card">
+                <span class="feat-icon">⏱️</span>
+                <h3>Duranaut Timer</h3>
+                <ul>
+                    <li>Session time tracking</li>
+                    <li>Downtime monitoring</li>
+                    <li>Break time management</li>
+                    <li>Leakage calculation</li>
+                    <li>Full-day &amp; half-day shift support</li>
+                </ul>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">📈</span>
+                <h3>IVE TaskTally</h3>
+                <ul>
+                    <li>Task counter with AHT tracking</li>
+                    <li>Process-specific AHT targets</li>
+                    <li>Real-time productivity metrics</li>
+                    <li>Individual task timing</li>
+                    <li>Performance indicators</li>
+                </ul>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">📅</span>
+                <h3>Taskinator</h3>
+                <ul>
+                    <li>Calendar-based task history</li>
+                    <li>Daily/weekly/monthly stats</li>
+                    <li>Data export/import</li>
+                    <li>Long-term productivity tracking</li>
+                    <li>Historical data preservation</li>
+                </ul>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">☕</span>
+                <h3>Break Tracker</h3>
+                <ul>
+                    <li>1-hour break allocation</li>
+                    <li>Visual break indicators</li>
+                    <li>Automatic break time sync</li>
+                    <li>Break usage monitoring</li>
+                    <li>Color-coded status alerts</li>
+                </ul>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">🛡️</span>
+                <h3>IVE Guard</h3>
+                <ul>
+                    <li>Form validation system</li>
+                    <li>31 predefined data rows</li>
+                    <li>Manual ON/OFF toggle</li>
+                    <li>Mismatch detection</li>
+                    <li>Quality assurance automation</li>
+                </ul>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">🔗</span>
+                <h3>P360 Integration</h3>
+                <ul>
+                    <li>Real-time downtime tracking</li>
+                    <li>Bottom-left timer widget</li>
+                    <li>Configurable notifications</li>
+                    <li>Break code separation</li>
+                    <li>Seamless data sync</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- INSTALL -->
+    <section class="wrap narrow" id="install">
+        <div class="sec-header">
+            <div class="sec-eyebrow">Get Started</div>
+            <div class="sec-title">Install in minutes</div>
+            <p class="sec-sub">Four steps to get up and running on Harmony Console.</p>
+        </div>
+
+        <div class="steps-list">
+            <div class="step-row">
+                <div class="step-num-col"><div class="step-num-val">01</div></div>
+                <div class="step-body">
+                    <h4>Install Tampermonkey</h4>
+                    <p>Add Tampermonkey to your browser:
+                        <a href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank">Chrome</a> ·
+                        <a href="https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/" target="_blank">Firefox</a> ·
+                        <a href="https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd" target="_blank">Edge</a>
+                    </p>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num-col"><div class="step-num-val">02</div></div>
+                <div class="step-body">
+                    <h4>Click Install Script</h4>
+                    <p>Click the "Install Script" button in the nav bar or hero section. Tampermonkey will open the installation prompt automatically.</p>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num-col"><div class="step-num-val">03</div></div>
+                <div class="step-body">
+                    <h4>Confirm Installation</h4>
+                    <p>Review the script details in Tampermonkey and click "Install" to confirm. The script activates immediately on the target page.</p>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num-col"><div class="step-num-val">04</div></div>
+                <div class="step-body">
+                    <h4>Open Harmony Console</h4>
+                    <p>Navigate to <a href="https://console.harmony.a2z.com" target="_blank">console.harmony.a2z.com</a> and look for the 📊 button in the bottom-right corner to access all tools.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CHANGELOG -->
+    <section class="wrap" id="changelog">
+        <div class="sec-header">
+            <div class="sec-eyebrow">What's New</div>
+            <div class="sec-title">v15.00.06 Release Notes</div>
+            <p class="sec-sub">P360 integration and major quality-of-life improvements.</p>
+        </div>
+
+        <div class="cl-grid">
+            <div class="cl-cell"><span class="cl-icon">🚀</span><p class="cl-text"><strong>Real-time P360 sync</strong> — 1-second interval keeps downtime data always current.</p></div>
+            <div class="cl-cell"><span class="cl-icon">🖥️</span><p class="cl-text"><strong>Bottom-left timer widget</strong> — Shows active downtime code and elapsed time only when active.</p></div>
+            <div class="cl-cell"><span class="cl-icon">🔔</span><p class="cl-text"><strong>Configurable notifications</strong> — Set interval from 1–60 minutes (default 5 min) or disable entirely.</p></div>
+            <div class="cl-cell"><span class="cl-icon">⚙️</span><p class="cl-text"><strong>Notification settings in Duranaut</strong> — Toggle and interval control built into the Duranaut modal.</p></div>
+            <div class="cl-cell"><span class="cl-icon">☕</span><p class="cl-text"><strong>Break code separation</strong> — Break1, Break2, and Lunch are automatically routed to Break Tracker.</p></div>
+            <div class="cl-cell"><span class="cl-icon">💾</span><p class="cl-text"><strong>Taskinator preservation</strong> — Reset All Data now keeps your Taskinator history intact.</p></div>
+            <div class="cl-cell"><span class="cl-icon">🐛</span><p class="cl-text"><strong>Bug fix</strong> — Resolved <code>updateDuranautDisplay()</code> reference error that blocked P360 tracking.</p></div>
+            <div class="cl-cell"><span class="cl-icon">🎨</span><p class="cl-text"><strong>Enhanced CSS</strong> — Improved styling for P360 timer widget with smooth transitions.</p></div>
+            <div class="cl-cell"><span class="cl-icon">📋</span><p class="cl-text"><strong>Better logging</strong> — Detailed console messages for easier debugging and monitoring.</p></div>
+            <div class="cl-cell"><span class="cl-icon">🔄</span><p class="cl-text"><strong>No-reload reset</strong> — Reset All Data no longer reloads the page, keeping P360 widget active.</p></div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- TECH SPECS -->
+    <section class="wrap" id="specs">
+        <div class="sec-header">
+            <div class="sec-eyebrow">Under the Hood</div>
+            <div class="sec-title">Technical Specs</div>
+            <p class="sec-sub">Built for reliability and performance on Harmony Console.</p>
+        </div>
+
+        <div class="specs-strip">
+            <div class="spec-cell"><div class="spec-lbl">Version</div><div class="spec-val">15.00.06</div></div>
+            <div class="spec-cell"><div class="spec-lbl">Platform</div><div class="spec-val">Tampermonkey</div></div>
+            <div class="spec-cell"><div class="spec-lbl">Target URL</div><div class="spec-val">harmony.a2z.com</div></div>
+            <div class="spec-cell"><div class="spec-lbl">Storage</div><div class="spec-val">localStorage + GM</div></div>
+            <div class="spec-cell"><div class="spec-lbl">P360 Sync</div><div class="spec-val">Every 1 second</div></div>
+            <div class="spec-cell"><div class="spec-lbl">Browsers</div><div class="spec-val">Chrome · FF · Edge</div></div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- TEAM -->
+    <section class="wrap" id="team">
+        <div class="sec-header">
+            <div class="sec-eyebrow">The Team</div>
+            <div class="sec-title">Built by</div>
+            <p class="sec-sub">The people behind the tool.</p>
+        </div>
+
+        <div class="people-grid">
+            <!-- Tusar Mukhopadhyay -->
+            <a href="https://atoz.amazon.work/phonetool/users/tusarmuk" target="_blank" rel="noopener noreferrer" class="person-card">
+                <img src="https://github.com/olivieraamelia74-arch/Link_Extractor/blob/olivieraamelia74-arch-patch-1/204637985.jpg?raw=true" alt="Tusar Mukhopadhyay" class="person-avatar"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <div class="person-fallback">T</div>
+                <div class="person-name">Tusar Mukhopadhyay</div>
+                <div class="person-role">Content Reviewer</div>
+            </a>
+
+            <!-- Shouvik Banerjee -->
+            <a href="https://atoz.amazon.work/phonetool/users/bshouvik" target="_blank" rel="noopener noreferrer" class="person-card">
+                <img src="https://github.com/olivieraamelia74-arch/Link_Extractor/blob/olivieraamelia74-arch-patch-1/shouvik.jpg?raw=true" alt="Shouvik Banerjee" class="person-avatar"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <div class="person-fallback">S</div>
+                <div class="person-name">Shouvik Banerjee</div>
+                <div class="person-role">Content Reviewer</div>
+            </a>
+
+            <!-- Prakash Mishra -->
+            <a href="https://atoz.amazon.work/phonetool/users/bpmishra" target="_blank" rel="noopener noreferrer" class="person-card">
+                <img src="https://github.com/olivieraamelia74-arch/Link_Extractor/blob/olivieraamelia74-arch-patch-1/Prakash.jpg?raw=true" alt="Prakash Mishra" class="person-avatar"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <div class="person-fallback">P</div>
+                <div class="person-name">Prakash Mishra</div>
+                <div class="person-role">Sr Content Reviewer Italian</div>
+            </a>
+
+            <!-- Suman Mandal -->
+            <a href="https://atoz.amazon.work/phonetool/users/sumazman" target="_blank" rel="noopener noreferrer" class="person-card">
+                <img src="https://github.com/olivieraamelia74-arch/Link_Extractor/blob/olivieraamelia74-arch-patch-1/suman.jpg?raw=true" alt="Suman Mandal" class="person-avatar"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <div class="person-fallback">S</div>
+                <div class="person-name">Suman Mandal</div>
+                <div class="person-role">Content Reviewer</div>
+            </a>
+
+            <!-- Sridevi Naga Pravallika Kanakala -->
+            <a href="https://atoz.amazon.work/phonetool/users/sridevna" target="_blank" rel="noopener noreferrer" class="person-card">
+                <img src="https://github.com/olivieraamelia74-arch/Link_Extractor/blob/olivieraamelia74-arch-patch-1/sridevi.jpg?raw=true" alt="Sridevi Naga Pravallika Kanakala" class="person-avatar"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <div class="person-fallback">S</div>
+                <div class="person-name">Sridevi Naga Pravallika Kanakala</div>
+                <div class="person-role">Content Reviewer</div>
+            </a>
+
+            <!-- Mayur Bendale -->
+            <a href="https://atoz.amazon.work/phonetool/users/nmayuben" target="_blank" rel="noopener noreferrer" class="person-card">
+                <img src="https://github.com/olivieraamelia74-arch/Link_Extractor/blob/olivieraamelia74-arch-patch-1/mayur.jpg?raw=true" alt="Mayur Bendale" class="person-avatar"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <div class="person-fallback">M</div>
+                <div class="person-name">Mayur Bendale</div>
+                <div class="person-role">Content Reviewer</div>
+            </a>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- LEADERSHIP -->
+    <section class="wrap" id="leadership">
+        <div class="sec-header">
+            <div class="sec-eyebrow" style="color:#a78bfa;">Leadership</div>
+            <div class="sec-title">Guided by</div>
+            <p class="sec-sub">The leaders who make it possible.</p>
+        </div>
+
+        <div class="people-grid">
+            <!-- Sunita Kumari Gaire — FIRST -->
+            <a href="https://atoz.amazon.work/phonetool/users/gaires" target="_blank" rel="noopener noreferrer" class="person-card lead">
+                <img src="https://github.com/olivieraamelia74-arch/Link_Extractor/blob/olivieraamelia74-arch-patch-1/sunita.jpg?raw=true" alt="Sunita Kumari Gaire" class="person-avatar"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <div class="person-fallback">S</div>
+                <div class="person-name">Sunita Kumari Gaire</div>
+                <div class="person-role">Ad Policing Manager</div>
+            </a>
+
+            <!-- Nithin Anand -->
+            <a href="https://atoz.amazon.work/phonetool/users/annithin" target="_blank" rel="noopener noreferrer" class="person-card lead">
+                <img src="https://github.com/olivieraamelia74-arch/Link_Extractor/blob/olivieraamelia74-arch-patch-1/nithin.jpg?raw=true" alt="Nithin Anand" class="person-avatar"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <div class="person-fallback">N</div>
+                <div class="person-name">Nithin Anand</div>
+                <div class="person-role">Business Operations Manager</div>
+            </a>
+
+            <!-- Manjunath D — LAST -->
+            <a href="https://atoz.amazon.work/phonetool/users/dnmnjun" target="_blank" rel="noopener noreferrer" class="person-card lead">
+                <img src="https://github.com/olivieraamelia74-arch/Link_Extractor/blob/olivieraamelia74-arch-patch-1/mnju.jpg?raw=true" alt="Manjunath D" class="person-avatar"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                <div class="person-fallback">M</div>
+                <div class="person-name">Manjunath D</div>
+                <div class="person-role">Ad Operation SME</div>
+            </a>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FAQ -->
+    <section class="wrap narrow" id="faq">
+        <div class="sec-header">
+            <div class="sec-eyebrow">Got Questions?</div>
+            <div class="sec-title">FAQ</div>
+            <p class="sec-sub">Everything you need to know about the script.</p>
+        </div>
+
+        <div class="faq-list">
+            <div class="faq-item">
+                <button class="faq-q">Does this work with P360 Timelog Monitor? <span class="faq-arrow">▼</span></button>
+                <div class="faq-a">Yes! Version 15.00.06 includes full P360 integration. The script automatically syncs with P360 downtime tracking and displays a real-time timer widget in the bottom-left corner.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">Will my Taskinator history be preserved when I reset data? <span class="faq-arrow">▼</span></button>
+                <div class="faq-a">Absolutely. The "Reset All Data" function specifically preserves Taskinator history while clearing all other productivity data. Your long-term records are always safe.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How do I configure P360 notifications? <span class="faq-arrow">▼</span></button>
+                <div class="faq-a">Open the Duranaut modal and scroll to the bottom. You'll find P360 Notification Settings where you can enable/disable notifications and set the interval (1–60 minutes, default 5 min).</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">Can I use this on multiple browsers? <span class="faq-arrow">▼</span></button>
+                <div class="faq-a">Yes, as long as Tampermonkey is installed. Data is stored locally per browser — use the export/import feature in Taskinator if you need to switch browsers.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">What happens if I encounter errors? <span class="faq-arrow">▼</span></button>
+                <div class="faq-a">Open the browser console (F12) and look for [P360] or [MERGED SCRIPT] log entries. Most issues are resolved by refreshing the page or reinstalling the script.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="fb-logo">Stark <span>Suite</span></div>
+                <div class="fb-sub">Version 15.00.06<br>Released February 2026 · For internal use only</div>
+            </div>
+            <div class="footer-col">
+                <h5>Navigation</h5>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#install">Install</a></li>
+                    <li><a href="#changelog">Changelog</a></li>
+                    <li><a href="#team">Team</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h5>Resources</h5>
+                <ul>
+                    <li><a href="https://console.harmony.a2z.com" target="_blank">Harmony Console</a></li>
+                    <li><a href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank">Tampermonkey (Chrome)</a></li>
+                    <li><a href="https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/" target="_blank">Tampermonkey (Firefox)</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copy">© 2026 Stark Productivity Suite · Created by bshouvik &amp; nmayuben · All rights reserved.</p>
+            <p class="footer-copy">Amazon Harmony Console · Internal Use Only</p>
+        </div>
+    </footer>
+
+    
+    <script>
+        // ── SCROLL PROGRESS BAR ──
+        window.addEventListener('scroll', () => {
+            const bar = document.getElementById('prog');
+            const scrolled = window.scrollY;
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            if (total > 0) bar.style.width = (scrolled / total * 100) + '%';
+        });
+
+        // ── FAQ ACCORDION ──
+        document.querySelectorAll('.faq-q').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.closest('.faq-item');
+                const isOpen = item.classList.contains('open');
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+                if (!isOpen) item.classList.add('open');
+            });
+        });
+
+        // ── SCROLL-REVEAL (Intersection Observer) ──
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.07, rootMargin: '0px 0px -32px 0px' });
+
+        document.querySelectorAll(
+            '.feat-card, .step-row, .cl-cell, .spec-cell, .person-card, .faq-item'
+        ).forEach((el, i) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(18px)';
+            el.style.transition = `opacity 0.45s ease ${i * 0.04}s, transform 0.45s ease ${i * 0.04}s`;
+            revealObserver.observe(el);
+        });
+
+        // ── HERO STATS COUNTER ANIMATION ──
+        function animateCounter(el, target, suffix, duration) {
+            const isFloat = target % 1 !== 0;
+            let start = 0;
+            const step = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += step;
+                if (start >= target) {
+                    start = target;
+                    clearInterval(timer);
+                }
+                el.textContent = (isFloat ? start.toFixed(1) : Math.floor(start)) + suffix;
+            }, 16);
+        }
+
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const nums = entry.target.querySelectorAll('.hero-stat .num');
+                    const data = [
+                        { val: 6, suffix: '+' },
+                        { val: 1, suffix: 's' },
+                        { val: 31, suffix: '' },
+                        { val: 5, suffix: 'm' }
+                    ];
+                    nums.forEach((el, i) => {
+                        if (data[i]) animateCounter(el, data[i].val, data[i].suffix, 800);
+                    });
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const heroStats = document.querySelector('.hero-stats');
+        if (heroStats) statsObserver.observe(heroStats);
+
+        // ── SMOOTH HOVER GLOW ON PERSON CARDS ──
+        document.querySelectorAll('.person-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                card.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(59,130,246,0.06), var(--bg2) 60%)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.background = '';
+            });
+        });
+
+        document.querySelectorAll('.person-card.lead').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                card.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(99,102,241,0.07), var(--bg2) 60%)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.background = '';
+            });
+        });
+    </script>
+
+</body>
+</html>
